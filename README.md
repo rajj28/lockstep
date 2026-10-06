@@ -15,7 +15,7 @@ I ran it over the public **UMI "cup in the wild"** dataset ([lerobot/umi_cup_in_
 | Where | the 5 jump episodes I could view were all recorded outdoors (a sunny patio and a sidewalk café) |
 | Camera–hand sync | optical flow aligned against hand **rotation** (r = 0.70) rather than translation (r = 0.23); every decoded episode lines up within 100 ms |
 
-The full write-up with charts and the actual frames is in [`out/report.html`](out/report.html).
+**Read the report (charts and the actual frames): https://rajj28.github.io/lockstep/**
 
 ## Checking the checker
 
