@@ -1,0 +1,192 @@
+<title>Lockstep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a single-column lab report. Each finding = claim, chart, real frames, numbers. Wide figures scroll inside their own box. */
+:root {
+  --bg: #f3f4f1; --paper: #ffffff; --fg: #15191d; --muted: #5b6570; --line: #d8dcd6; --sunk: #e9ebe6;
+  --accent: #e8590c; --trace: #1c6fc4; --good: #2f8a43; --good-soft: #e1f2e4; --warn: #c28a12; --warn-soft: #fbf1d8;
+  --bad: #c92a2a; --bad-soft: #fbe3e3;
+  --display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", Consolas, ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #101316; --paper: #171b1f; --fg: #e6e9ec; --muted: #9ba5ae; --line: #2a3138; --sunk: #1f252a;
+  --accent: #ff8a3d; --trace: #6aaef2; --good: #6fcf86; --good-soft: #163021; --warn: #f0c05a; --warn-soft: #332810;
+  --bad: #ff7b7b; --bad-soft: #3a1818; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #101316; --paper: #171b1f; --fg: #e6e9ec; --muted: #9ba5ae; --line: #2a3138; --sunk: #1f252a;
+  --accent: #ff8a3d; --trace: #6aaef2; --good: #6fcf86; --good-soft: #163021; --warn: #f0c05a; --warn-soft: #332810;
+  --bad: #ff7b7b; --bad-soft: #3a1818; color-scheme: dark }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 16px/1.6 var(--body); margin: 0; }
+.wrap { max-width: 880px; margin: 0 auto; padding-inline: 18px; padding-block: 36px 72px; }
+.eyebrow { font: 600 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+h1 { font: 700 clamp(32px, 5.4vw, 52px)/1.04 var(--display); margin: 10px 0 14px; letter-spacing: -.01em; text-wrap: balance; }
+h2 { font: 700 30px/1.15 var(--display); margin: 56px 0 10px; text-wrap: balance; }
+h3 { font: 700 20px/1.2 var(--display); margin: 22px 0 6px; }
+p { margin: 0 0 12px; max-width: 68ch; }
+.lede { font-size: 19px; color: var(--muted); }
+.by { font: 13px var(--mono); color: var(--muted); margin-top: 6px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 26px 0 8px; }
+.tile { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+.tile b { display: block; font: 700 30px/1.1 var(--display); font-variant-numeric: tabular-nums; }
+.tile span { font-size: 13.5px; color: var(--muted); }
+.tile.q b { color: var(--bad); } .tile.w b { color: var(--warn); } .tile.g b { color: var(--good); }
+.flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font: 13px var(--mono); margin: 18px 0; }
+.flow span { background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 5px 9px; }
+.flow i { color: var(--muted); font-style: normal; }
+.finding { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; margin: 18px 0; }
+.code { display: inline-block; font: 600 12px var(--mono); padding: 2px 8px; border-radius: 99px; margin-right: 6px; }
+.code.q { background: var(--bad-soft); color: var(--bad); } .code.w { background: var(--warn-soft); color: var(--warn); } .code.i { background: var(--sunk); color: var(--muted); }
+.fig { overflow-x: auto; margin: 10px 0; }
+.fig img { display: block; max-width: none; height: 132px; border-radius: 6px; }
+.cap { font-size: 14px; color: var(--muted); margin: 6px 0 12px; max-width: 70ch; }
+.chart { width: 100%; height: auto; display: block; margin: 8px 0; }
+.chart .grid { stroke: var(--line); stroke-width: 1; }
+.chart .axis { stroke: var(--muted); stroke-width: 1; }
+.chart .tick, .chart .lbl { fill: var(--muted); font: 11px var(--mono); }
+.chart .s1 { stroke: var(--trace); stroke-width: 2; }
+.chart .s2 { stroke: var(--bad); stroke-width: 2.2; }
+.chart .mark { stroke: var(--bad); stroke-width: 1; stroke-dasharray: 3 3; opacity: .7; }
+.chart .band { fill: var(--good-soft); }
+.chart .dot { fill: var(--muted); opacity: .55; }
+.chart .dotw { fill: var(--warn); }
+.chart .bar { fill: var(--trace); opacity: .85; }
+.nums { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px 16px; font-size: 15px; margin: 8px 0; }
+.nums div { border-top: 1px solid var(--line); padding-top: 6px; }
+.nums b { font: 600 18px var(--mono); display: block; font-variant-numeric: tabular-nums; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; margin: 8px 0 14px; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 600 11.5px var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.good { color: var(--good); }
+.tablewrap { overflow-x: auto; }
+pre { background: var(--sunk); border-radius: 8px; padding: 12px 14px; font: 12.5px/1.5 var(--mono); overflow-x: auto; }
+.callout { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; margin: 14px 0; }
+.glove { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 12px; }
+.glove div { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.glove h3 { margin-top: 0; }
+ul { padding-left: 20px; margin: 0 0 12px; } li { margin: 4px 0; }
+footer { margin-top: 56px; border-top: 1px solid var(--line); padding-top: 16px; font-size: 14px; color: var(--muted); }
+code { font-family: var(--mono); font-size: .9em; background: var(--sunk); padding: 1px 5px; border-radius: 4px; }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">Lockstep · QA for human demonstration data</div>
+  <h1>{{episodes}} human demonstrations. Every structural check passes. Physics flags 22.</h1>
+  <p class="lede">I built a small QA pipeline for hand-held demonstration data and ran it over the public UMI "cup in the wild" dataset: {{hours}} hours of people doing a task with a hand-held gripper and a wrist camera. This page shows what it caught, the frames that prove it, how I tested the checker itself, and how it carries over to glove data.</p>
+  <div class="by">Ruturaj Sonkamble · built for my conversation with Intelligence Factory · data: lerobot/umi_cup_in_the_wild (LeRobot v3)</div>
+
+  <div class="tiles">
+    <div class="tile"><b>{{hours}} h</b><span>{{episodes}} episodes, {{frames}} frames, all scanned</span></div>
+    <div class="tile q"><b>{{quarantined}}</b><span>episodes quarantined (kept, never deleted)</span></div>
+    <div class="tile w"><b>{{warned}}</b><span>episodes passed with a warning</span></div>
+    <div class="tile g"><b>0 / 600</b><span>false alarms on harmless changes</span></div>
+    <div class="tile g"><b>{{sync_mae_ms}} ms</b><span>mean error recovering planted sync offsets</span></div>
+  </div>
+
+  <div class="flow"><span>episode</span><i>→</i><span>structure</span><i>→</i><span>physics</span><i>→</i><span>video</span><i>→</i><span>camera–hand sync</span><i>→</i><span>passport</span><i>→</i><span>quarantine or release</span></div>
+  <p>Timestamps are exactly 0.1 s apart, frame indices never skip, there are no missing values, the video index agrees with the data for {{meta_ok}} of {{episodes}} episodes, and every episode I decoded has exactly one frame per row. A schema validator would call this dataset clean. The interesting failures only show up when you ask whether the motion is physically possible, and whether the camera agrees with it.</p>
+
+  <h2>1. Two hands at once</h2>
+  <div class="finding">
+    <span class="code q">POSE_FLIPFLOP</span><span class="code q">TELEPORT</span>
+    <p>In episode 136 the recorded hand jumps {{j136}} cm in a tenth of a second, then jumps back five frames later, again and again. Between jumps both positions keep moving smoothly in the same direction. The data is alternating between two tracks about 37 cm apart.</p>
+    {{chart136}}
+    <p class="cap">Episode 136: hand distance from its starting point. Dashed lines mark the frames the checker flagged.</p>
+    <div class="fig"><img src="{{img136}}" alt="Six consecutive wrist-camera frames from episode 136 around frame 79; the view barely changes."></div>
+    <p class="cap">Frames 76 to 81 from the wrist camera. The view barely changes across the jump at frame 79: optical flow there is {{flow136}} px, below the episode's median of {{flowmed136}} px. The camera did not move 37 cm. The pose did.</p>
+    <p>Same story in episode 144: a {{j144}} cm jump while the camera's image motion ({{flow144}} px) stays ordinary. Quarantined: episodes {{q_eps}}.</p>
+  </div>
+
+  <h2>2. A hand that walked 14 metres</h2>
+  <div class="finding">
+    <span class="code q">POSE_RUNAWAY</span>
+    <p>Episode 125 starts normally, then the recorded position slides away for 36 seconds: {{path125}} m of travel inside a {{ext125}} m box, ending {{end_dist}} m from where it began and {{drop}} m lower. The camera stays over the same kitchen table the whole time.</p>
+    {{chart125}}
+    <div class="fig"><img src="{{img125}}" alt="Five frames spread across episode 125, all showing the same kitchen table."></div>
+    <p class="cap">Frames at 0%, 25%, 50%, 75% and 100% of episode 125. Same table, same cups. Median recorded hand speed is {{speed125}} m/s, while the camera's median image motion is {{flow125}} px. A typical episode's median is {{flow_typ}} px.</p>
+    <p class="callout">No per-frame speed check fires on this episode, because the runaway is smooth. It is caught by a whole-episode check: on this task, 99.9% of episodes stay inside a {{p999}} m box. My first version of this check used a standard deviation and missed exactly this kind of slow drift. My own validation caught that (section 6).</p>
+  </div>
+
+  <h2>3. Same room, different origin</h2>
+  <div class="finding">
+    <span class="code w">FRAME_OFFSET</span>
+    <p>Fifteen episodes move normally, but their centre sits {{off_lo}} to {{off_hi}} m from the centre of the whole dataset. They come in runs of neighbouring episodes. Episodes 381 to 389 were recorded in the same conference room, at the same table, as their unflagged neighbours 377, 379, 390 and 391. The coordinate origin moved, not the person.</p>
+    {{chart_centres}}
+    <p class="cap">Median x position of each episode from 340 to 440. Amber dots are the flagged episodes.</p>
+    <div class="fig"><img src="{{img_session}}" alt="Frames from episodes 377 to 391, all in the same conference room."></div>
+    <p class="cap">One frame from each of episodes 377, 379, 381, 383, 385, 387, 389, 390 and 391. One room, one table.</p>
+    <p>This is harmless for a policy that only learns relative motion, so these episodes pass with a warning instead of quarantine. It still costs every model trained on absolute state, because they are {{frac}}% of frames:</p>
+    <div class="nums">
+      <div><b>{{std_all}} → {{std_wo}} m</b>std of x, with and without these episodes (2.2×). ACT normalises state with mean and std.</div>
+      <div><b>{{range_all}} → {{range_wo}} m</b>range of x. LeRobot's Diffusion Policy normalises state and action with min and max, so normal demonstrations use about {{squeeze}}% of the input range.</div>
+    </div>
+  </div>
+
+  <h2>4. {{naive_wraps}} rotation spikes that are not real</h2>
+  <div class="finding">
+    <span class="code i">ROTVEC_WRAP</span>
+    <p>Hand orientation is stored as an axis-angle vector, which wraps around at ±π. A naive check that subtracts consecutive vectors finds {{naive_wraps}} "spikes" of more than 1 rad per frame. Measuring the true angle between consecutive rotations finds {{true_spikes}} steps faster than 10 rad/s anywhere in the dataset. Every one of those spikes is the representation wrapping, not the hand moving. Quarantining them would throw away good data, so the checker records them as information only.</p>
+  </div>
+
+  <h2>5. Where the failures happen</h2>
+  <div class="finding">
+    <p>Five of the six jump episodes are in the videos I downloaded, and all five were recorded outdoors: three at a sunny patio (136, 140, 144) and two at a busy sidewalk café (165, 170). Indoor episodes nearby pass, and so do some outdoor ones, so outdoors looks like a risk factor rather than a verdict. My guess is that camera-based tracking struggles with strong sunlight and moving people. That is a hypothesis, not a measured cause.</p>
+    <div class="fig"><img src="{{img_where}}" alt="Mid-episode frames from episodes 130 to 180 showing indoor, patio and street scenes."></div>
+    <p class="cap">One frame from each of episodes 130 to 180. Flagged: 136, 140, 144, 165, 170.</p>
+    <p>The operational point: failure rates should be tracked per location, per station and per device, not only per episode. A glove that starts failing shows up as a cluster long before anyone looks at a single episode.</p>
+  </div>
+
+  <h2>Camera–hand sync</h2>
+  <div class="finding">
+    <p>The camera is mounted on the hand, so what it sees is dominated by the hand turning, not by it sliding sideways. Aligning optical flow against rotation speed gives a median peak correlation of {{corr_rot}}, against {{corr_tr}} for translation. Over {{sync_n}} episodes with a trusted estimate, camera and pose line up at a median of {{sync_med}} ms (5th to 95th percentile: {{sync_p5}} to {{sync_p95}} ms). That is what you would expect here, since UMI computes the pose from this same camera.</p>
+    {{chart_sync}}
+    <p>To check the estimator, I shifted the pose stream against the video by ±1, 2, 3 and 5 frames in {{sync_trials}} trials. It recovered the planted shift with a mean error of {{sync_mae_ms}} ms, and {{sync_half}}% of trials landed within half a frame. None of the decoded episodes is out of sync, and the check is able to tell.</p>
+    <p class="callout">On a glove, the gyroscope measures rotation speed directly. The same alignment, gyroscope against camera optical flow, estimates the IMU–camera offset for every episode without extra hardware.</p>
+  </div>
+
+  <h2>6. Checking the checker</h2>
+  <div class="finding">
+    <p>I planted known faults into 200 clean episodes and applied harmless changes to the same 200, then counted what the checks caught and what they flagged wrongly.</p>
+    <div class="tablewrap"><table>
+      <tr><th>Planted fault</th><th>Caught</th></tr>
+      {{fault_rows}}
+      <tr><td>frozen video (one frame repeated 4 times)</td><td class="num good">{{fv_c}} / {{fv_n}}</td></tr>
+    </table></div>
+    <div class="tablewrap"><table>
+      <tr><th>Harmless change</th><th>Wrongly flagged</th></tr>
+      {{harmless_rows}}
+    </table></div>
+    <p>The first run found a real gap: slow drift was caught in only 1 of 200 episodes, because a standard deviation hides a smooth ramp. I replaced it with a whole-episode extent check using a threshold taken from the data. It now catches 200 of 200, and nothing else changed.</p>
+  </div>
+
+  <h2>What comes out</h2>
+  <p>Every episode gets a passport: a content hash, metrics, and findings with reason codes and frame numbers. The release manifest lists what is included and what is quarantined, and it carries its own hash, so "v14 is worse than v13" becomes a diff, not a guess.</p>
+  <pre>{{passport}}</pre>
+  <p class="cap">Passport for episode 136 (abridged). Release {{release_hash}}: {{n_inc}} episodes included, {{quarantined}} quarantined. A full re-scan takes about 4 seconds once each video has been decoded once.</p>
+
+  <h2>What I would do with glove data</h2>
+  <div class="glove">
+    <div><h3>Camera, IMU, force in lockstep</h3><p>Per-episode offsets from gyroscope vs optical flow, and from force onset vs the moment contact becomes visible, stored as numbers with thresholds, not assumptions.</p></div>
+    <div><h3>Dead or drifting sensors</h3><p>Frozen frames by hash, stuck or saturated channels, force zero-drift per session, and a missing channel treated as missing, never as zero.</p></div>
+    <div><h3>Physics before training</h3><p>Hand speed, extent and rotation limits like the ones above, plus finger joint limits and bone-length consistency, and retargeting feasibility for each robot.</p></div>
+    <div><h3>Per glove, per station, per day</h3><p>Failure rates by device and location, so a bad glove is found from a cluster in the first hour, not from a model that trains badly a week later.</p></div>
+  </div>
+
+  <h2>Limits</h2>
+  <ul>
+    <li>One public dataset at 10 fps. Video was decoded for 3 of its 15 files ({{files}}): {{n_video_eps}} episodes, about {{pct_video}}%. The pose and metadata checks ran on all {{episodes}}.</li>
+    <li>The likely causes (tracking relocalisation outdoors, a moving map origin) are hypotheses read from the data and frames, not confirmed with the dataset's authors. The findings are about this LeRobot copy of the dataset.</li>
+    <li>Thresholds suit a tabletop task with a hand-held gripper. A new task or device needs its own thresholds, taken from its own data the same way.</li>
+    <li>It has no force or IMU channels, so those checks are a plan here, not a result.</li>
+  </ul>
+
+  <footer>
+    Built by Ruturaj Sonkamble (Pune) · ruturajsonkamble29@gmail.com · github.com/rajj28<br>
+    Data: <a href="https://huggingface.co/datasets/lerobot/umi_cup_in_the_wild">lerobot/umi_cup_in_the_wild</a> (Apache-2.0), from the UMI project (Chi et al., 2024). Python, NumPy, OpenCV, ffmpeg.
+  </footer>
+</div>

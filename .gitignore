@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+*.pyc
+data/
+out/passports/
+out_flow_probe.npy
+logs_*.txt
+out/validate_log.txt

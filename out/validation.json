@@ -1,0 +1,68 @@
+{
+ "episodes_tested": 200,
+ "faults": {
+  "teleport (0.4 m for 5 frames)": {
+   "caught": 200,
+   "of": 200,
+   "recall": 1.0
+  },
+  "slow drift (3 m over the episode)": {
+   "caught": 200,
+   "of": 200,
+   "recall": 1.0
+  },
+  "frozen pose (8 frames)": {
+   "caught": 200,
+   "of": 200,
+   "recall": 1.0
+  },
+  "dropped rows (3 frames)": {
+   "caught": 200,
+   "of": 200,
+   "recall": 1.0
+  },
+  "NaN in one value": {
+   "caught": 200,
+   "of": 200,
+   "recall": 1.0
+  }
+ },
+ "harmless": {
+  "same rotation, other axis-angle form": {
+   "flagged": 0,
+   "of": 200,
+   "false_alarm_rate": 0.0
+  },
+  "sensor noise (1 mm, 0.2 deg)": {
+   "flagged": 0,
+   "of": 200,
+   "false_alarm_rate": 0.0
+  },
+  "whole episode shifted 0.3 m": {
+   "flagged": 0,
+   "of": 200,
+   "false_alarm_rate": 0.0
+  }
+ },
+ "frozen_video": {
+  "caught": 271,
+  "of": 271
+ },
+ "sync": {
+  "episodes": 271,
+  "trials": 2168,
+  "shifts_frames": [
+   -5,
+   -3,
+   -2,
+   -1,
+   1,
+   2,
+   3,
+   5
+  ],
+  "mean_abs_error_frames": 0.042,
+  "within_half_frame": 0.997,
+  "within_one_frame": 0.998
+ }
+}
